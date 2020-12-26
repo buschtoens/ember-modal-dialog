@@ -1,4 +1,7 @@
-/*globals document, Ember */
+/*globals document */
+import { getOwner } from '@ember/application';
+import Ember from 'ember';
+
 let hasDOM = typeof document !== 'undefined';
 
 function appendContainerElement(rootElementOrId, id) {
