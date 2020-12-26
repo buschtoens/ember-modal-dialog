@@ -16,17 +16,25 @@ function appendContainerElement(rootElementOrId, id) {
   rootEl.appendChild(modalContainerEl);
 }
 
-export default function(App) {
-  let emberModalDialog = App.emberModalDialog || {};
+export default function(AppOrEngine) {
+  // As there is only a single `Router` across the whole app, which is owned by the
+  // root `App`, this reliably finds the root `App` from an `Engine`.
+  let App = getOwner(getOwner(AppOrEngine).lookup('router:main'));
+
+  let emberModalDialog = AppOrEngine.emberModalDialog ?? App.emberModalDialog ?? {};
   let modalContainerElId = emberModalDialog.modalRootElementId || 'modal-overlays';
 
-  App.register('config:modals-container-id',
-               Ember.testing ? 'ember-testing' : modalContainerElId,
-               { instantiate: false });
+  AppOrEngine.register(
+    'config:modals-container-id',
+    Ember.testing ? 'ember-testing' : modalContainerElId,
+    { instantiate: false }
+  );
 
-  App.inject('service:modal-dialog',
-             'destinationElementId',
-             'config:modals-container-id');
+  AppOrEngine.inject(
+    'service:modal-dialog',
+    'destinationElementId',
+    'config:modals-container-id'
+  );
 
   appendContainerElement(App.rootElement, modalContainerElId);
 }
